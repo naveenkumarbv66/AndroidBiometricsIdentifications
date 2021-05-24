@@ -1,4 +1,4 @@
-package com.test.fringerprints.latest.lib.biometricscreen
+package com.biometric.detection
 
 import android.content.Context
 import android.util.Log
@@ -42,14 +42,28 @@ object BiometricUtility {
         object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationError(errCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errCode, errString)
-                if (errCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-                    Log.d(TAG, "user clicked negative button.")
-                } else {
-                    Log.d(
-                        TAG,
-                        "Called when an unrecoverable error has been encountered and the operation is complete."
-                    )
+                var localErrorMessage: String
+                when (errCode) {
+                    BiometricPrompt.ERROR_NEGATIVE_BUTTON -> {
+                        localErrorMessage = "The user pressed the negative button."
+                    }
+                    BiometricPrompt.ERROR_NO_BIOMETRICS -> {
+                        localErrorMessage = "The user does not have any biometrics enrolled."
+                    }
+                    BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL -> {
+                        localErrorMessage = "The device does not have pin, pattern, or password set up."
+                    }
+                    BiometricPrompt.ERROR_HW_NOT_PRESENT -> {
+                        localErrorMessage = "The device does not have the required authentication hardware."
+                    }
+                    BiometricPrompt.ERROR_USER_CANCELED -> {
+                        localErrorMessage = "The user canceled the operation."
+                    }
+                    else -> {
+                        localErrorMessage = "The sensor was unable to process the current image, Try later"
+                    }
                 }
+                Log.d(TAG, localErrorMessage)
                 Log.d(TAG, "errCode is $errCode and errString is: $errString")
                 processSuccess.onAuthenticationError(errCode, errString)
             }

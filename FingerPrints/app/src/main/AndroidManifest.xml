@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.test.fringerprints">
+    package="com.biometric.detection">
 
     <application
         android:allowBackup="true"
@@ -9,15 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FringerPrints">
-        <activity android:name=".latest.lib.biometricscreen.MainActivityTest">
+        <activity android:name="com.biometric.detection.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".old.EnableBiometricActivity"/>
 
     </application>
 
