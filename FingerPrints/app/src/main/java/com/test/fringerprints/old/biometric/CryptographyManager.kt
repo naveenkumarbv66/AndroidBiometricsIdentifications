@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.test.fringerprints.biometric
+package com.test.fringerprints.old.biometric
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
@@ -47,18 +47,18 @@ interface CryptographyManager {
     fun decryptData(ciphertext: ByteArray, cipher: Cipher): String
 
     fun persistCiphertextWrapperToSharedPrefs(
-        ciphertextWrapper: CiphertextWrapper,
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
+            ciphertextWrapper: CiphertextWrapper,
+            context: Context,
+            filename: String,
+            mode: Int,
+            prefKey: String
     )
 
     fun getCiphertextWrapperFromSharedPrefs(
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
+            context: Context,
+            filename: String,
+            mode: Int,
+            prefKey: String
     ): CiphertextWrapper?
 
 }
@@ -85,8 +85,8 @@ private class CryptographyManagerImpl : CryptographyManager {
     }
 
     override fun getInitializedCipherForDecryption(
-        keyName: String,
-        initializationVector: ByteArray
+            keyName: String,
+            initializationVector: ByteArray
     ): Cipher {
         val cipher = getCipher()
         val secretKey = getOrCreateSecretKey(keyName)
@@ -117,8 +117,8 @@ private class CryptographyManagerImpl : CryptographyManager {
 
         // if you reach here, then a new SecretKey must be generated for that keyName
         val paramsBuilder = KeyGenParameterSpec.Builder(
-            keyName,
-            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+                keyName,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
         )
         paramsBuilder.apply {
             setBlockModes(ENCRYPTION_BLOCK_MODE)
@@ -127,31 +127,41 @@ private class CryptographyManagerImpl : CryptographyManager {
             setUserAuthenticationRequired(true)
         }
 
+
+        // This is a workaround to avoid crashes on devices whose API level is < 24
+        // because KeyGenParameterSpec.Builder#setInvalidatedByBiometricEnrollment is only
+        // visible on API level +24.
+        // Ideally there should be a compat library for KeyGenParameterSpec.Builder but
+        // which isn't available yet.
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            paramsBuilder.setInvalidatedByBiometricEnrollment(false)
+        }*/
+        paramsBuilder.setInvalidatedByBiometricEnrollment(false)
         val keyGenParams = paramsBuilder.build()
         val keyGenerator = KeyGenerator.getInstance(
-            KeyProperties.KEY_ALGORITHM_AES,
-            ANDROID_KEYSTORE
+                KeyProperties.KEY_ALGORITHM_AES,
+                ANDROID_KEYSTORE
         )
         keyGenerator.init(keyGenParams)
         return keyGenerator.generateKey()
     }
 
     override fun persistCiphertextWrapperToSharedPrefs(
-        ciphertextWrapper: CiphertextWrapper,
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
+            ciphertextWrapper: CiphertextWrapper,
+            context: Context,
+            filename: String,
+            mode: Int,
+            prefKey: String
     ) {
         val json = Gson().toJson(ciphertextWrapper)
         context.getSharedPreferences(filename, mode).edit().putString(prefKey, json).apply()
     }
 
     override fun getCiphertextWrapperFromSharedPrefs(
-        context: Context,
-        filename: String,
-        mode: Int,
-        prefKey: String
+            context: Context,
+            filename: String,
+            mode: Int,
+            prefKey: String
     ): CiphertextWrapper? {
         val json = context.getSharedPreferences(filename, mode).getString(prefKey, null)
         return Gson().fromJson(json, CiphertextWrapper::class.java)

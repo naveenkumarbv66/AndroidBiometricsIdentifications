@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.test.fringerprints.biometric
+package com.test.fringerprints.old.biometric
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity

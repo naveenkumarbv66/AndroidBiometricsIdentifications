@@ -1,4 +1,4 @@
-package com.test.fringerprints
+package com.test.fringerprints.old
 
 import android.content.Context
 import android.content.Intent
@@ -11,10 +11,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import com.test.fringerprints.biometric.BiometricPromptUtils
-import com.test.fringerprints.biometric.CIPHERTEXT_WRAPPER
-import com.test.fringerprints.biometric.CryptographyManager
-import com.test.fringerprints.biometric.SHARED_PREFS_FILENAME
+import com.test.fringerprints.R
+import com.test.fringerprints.old.biometric.BiometricPromptUtils
+import com.test.fringerprints.old.biometric.CIPHERTEXT_WRAPPER
+import com.test.fringerprints.old.biometric.CryptographyManager
+import com.test.fringerprints.old.biometric.SHARED_PREFS_FILENAME
 import kotlinx.android.synthetic.main.enable_biometric_activity.*
 
 class EnableBiometricActivity : AppCompatActivity() {
